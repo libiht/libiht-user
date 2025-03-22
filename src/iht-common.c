@@ -81,3 +81,13 @@ int iht_set_allocator(iht_malloc_func malloc, iht_realloc_func realloc, iht_call
     iht__allocator.free = free;
     return 0;
 }
+
+/* Initialize system resources */
+int iht_init(void) {
+    iht__ioctl_init();
+}
+
+/* Close system resources */
+int iht_close(void) {
+    iht__ioctl_close();
+}

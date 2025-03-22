@@ -97,6 +97,10 @@ IHT_EXTERN int iht_set_allocator(iht_malloc_func malloc_func,
                                  iht_calloc_func calloc_func,
                                  iht_free_func free_func);
 
+/* Library APIs */
+IHT_EXTERN int iht_init(void);
+IHT_EXTERN int iht_close(void);
+
 /* Trace APIs */
 IHT_EXTERN iht_trace_t* iht_trace_init(pid_t pid);
 IHT_EXTERN void iht_trace_close(iht_trace_t* trace);

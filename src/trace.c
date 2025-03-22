@@ -19,6 +19,7 @@ iht_trace_t *iht_trace_init(pid_t pid) {
     iht_trace_t *trace = (iht_trace_t *)iht__calloc(1, sizeof(iht_trace_t));
     if (trace == NULL)
         return NULL;
+
     trace->pid = pid == 0 ? getpid() : pid;
     return trace;
 }
@@ -31,7 +32,6 @@ void iht_trace_close(iht_trace_t *trace) {
         iht__free(trace->data);
         trace->data = NULL;
     }
-
     iht__free(trace);
 }
 
