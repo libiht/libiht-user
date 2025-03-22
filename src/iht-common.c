@@ -85,9 +85,11 @@ int iht_set_allocator(iht_malloc_func malloc, iht_realloc_func realloc, iht_call
 /* Initialize system resources */
 int iht_init(void) {
     iht__ioctl_init();
+    return IHT_SUCCESS;
 }
 
 /* Close system resources */
 int iht_close(void) {
     iht__ioctl_close();
+    return IHT_SUCCESS;
 }

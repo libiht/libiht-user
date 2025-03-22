@@ -21,6 +21,7 @@
 enum IHT_ERROR_CODES {
     IHT_SUCCESS = 0,  // No error
     IHT_EGENERAL,     // General error
+    IHT_EALLOC,       // Memory allocation error
     IHT_ENOTIMPL,     // Not implemented
 
     IHT_ETRACE_INVALID = 128,    // Invalid trace

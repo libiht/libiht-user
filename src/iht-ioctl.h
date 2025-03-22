@@ -11,6 +11,8 @@
 
 #include "iht.h"
 
+#define LIBIHT_MAX_LBR_ENTRIES 32
+
 enum IOCTL {
     LIBIHT_IOCTL_BASE,  // Placeholder
 
@@ -48,7 +50,7 @@ typedef struct lbr_config lbr_config_t;
 
 // Define LBR data
 struct lbr_data {
-    uint64_t lbr_tos;                 // MSR_LBR_TOS
+    uint64_t lbr_tos;            // MSR_LBR_TOS
     lbr_stack_entry_t *entries;  // LBR stack entries
 };
 typedef struct lbr_data lbr_data_t;
@@ -82,9 +84,9 @@ typedef struct bts_config bts_config_t;
 // Define BTS data
 // TODO: pay attention when using this struct in dump bts
 struct bts_data {
-    bts_record_t *bts_buffer_base;  // BTS buffer base
-    bts_record_t *bts_index;        // BTS current index
-    uint64_t bts_interrupt_threshold;         // BTS interrupt threshold
+    bts_record_t *bts_buffer_base;     // BTS buffer base
+    bts_record_t *bts_index;           // BTS current index
+    uint64_t bts_interrupt_threshold;  // BTS interrupt threshold
 };
 typedef struct bts_data bts_data_t;
 
