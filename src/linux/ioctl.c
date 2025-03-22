@@ -25,17 +25,41 @@
 static int device_fd = -1;
 
 int iht__ioctl_init(void) {
+    if (device_fd >= 0) {
+        perror("Device already opened...");
+        return IHT__ERR(IHT_EIOCTL_ALREADY_INIT);
+    }
+
     device_fd = open("/proc/" DEVICE_NAME, O_RDWR);
     if (device_fd < 0) {
         perror("Failed to open the device...");
-        return IHT__ERR(IHT_EIOCTL_DEVICE_NOT_FOUND);
+        return IHT__ERR(IHT_EIOCTL_DEVICE_OPEN_FAILED);
     }
-    return 0;
+    return IHT_SUCCESS;
+}
+
+int iht__ioctl_close(void) {
+    if (device_fd < 0) {
+        perror("Device not opened...");
+        return IHT__ERR(IHT_EIOCTL_UNINIT);
+    }
+
+    if (close(device_fd) < 0) {
+        perror("Failed to close the device...");
+        return IHT__ERR(IHT_EIOCTL_DEVICE_CLOSE_FAILED);
+    }
+    return IHT_SUCCESS;
 }
 
 int iht__ioctl(xioctl_request_t* req) {
+    if (device_fd < 0) {
+        perror("Device not opened...");
+        return IHT__ERR(IHT_EIOCTL_UNINIT);
+    }
+
     if (ioctl(device_fd, LIBIHT_LKM_IOCTL_BASE, req)) {
         perror("Failed to perform ioctl operation...");
         return IHT__ERR(IHT_EIOCTL_INVALID);
     }
+    return IHT_SUCCESS;
 }

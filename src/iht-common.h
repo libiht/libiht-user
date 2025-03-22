@@ -23,6 +23,7 @@ void *iht__calloc(size_t count, size_t size);
 void iht__free(void *ptr);
 
 int iht__ioctl_init(void);
+int iht__ioctl_close(void);
 int iht__ioctl(xioctl_request_t *req);
 
 int iht__lbr_dump(iht_trace_t *trace);
