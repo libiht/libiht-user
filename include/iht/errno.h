@@ -10,5 +10,27 @@
 #define _IHT_ERRNO_H_
 
 /* TODO: Error Codes */
+#include <errno.h>
+
+#if EDOM > 0
+# define IHT__ERR(x) (-(x))
+#else
+# define IHT__ERR(x) (x)
+#endif
+
+enum IHT_ERROR_CODES {
+    IHT_SUCCESS = 0,  // No error
+    IHT_EGENERAL,     // General error
+    IHT_ENOTIMPL,     // Not implemented
+
+    IHT_ETRACE_INVALID = 128,    // Invalid trace
+    IHT_ETRACE_STATE_INVALID,    // Invalid trace state
+    IHT_ETRACE_PID_INVALID,      // Invalid trace PID
+    IHT_ETRACE_ALREADY_RUNNING,  // Trace already running
+    IHT_ETRACE_ALREADY_STOPPED,  // Trace already stopped
+
+    IHT_EIOCTL_INVALID = 256,                 // Invalid ioctl
+    IHT_EIOCTL_DEVICE_NOT_FOUND,              // Device not found
+};
 
 #endif /* _IHT_ERRNO_H_ */
