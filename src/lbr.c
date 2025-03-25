@@ -30,7 +30,7 @@ int iht_lbr_start(iht_trace_t *trace, uint64_t lbr_filters) {
     trace->config.lbr_filters = lbr_filters;
 
     /* Set up the IOCTL request */
-    struct xioctl_request req;
+    xioctl_request_t req;
     memset(&req, 0, sizeof(req));
     req.body.lbr.lbr_config.pid = trace->pid;
     req.body.lbr.lbr_config.lbr_select = lbr_filters;
@@ -55,7 +55,7 @@ int iht_lbr_stop(iht_trace_t *trace) {
         return IHT_ETRACE_PID_INVALID;
 
     /* Set up the IOCTL request */
-    struct xioctl_request req;
+    xioctl_request_t req;
     memset(&req, 0, sizeof(req));
     req.body.lbr.lbr_config.pid = trace->pid;
     req.cmd = LIBIHT_IOCTL_DISABLE_LBR;
@@ -68,23 +68,22 @@ int iht_lbr_stop(iht_trace_t *trace) {
 
 int iht__lbr_dump(iht_trace_t *trace) {
     int ret;
-    // TOOD: dump LBR trace
     /* Set up the IOCTL request */
-    struct xioctl_request req;
+    xioctl_request_t req;
     memset(&req, 0, sizeof(req));
 
     /* Set up LBR Buffer */
     req.body.lbr.buffer = (lbr_data_t *)iht__malloc(sizeof(lbr_data_t));
     if (req.body.lbr.buffer == NULL) {
         ret = IHT__ERR(IHT_EALLOC);
-        goto buf_cleanup;
+        goto no_cleanup;
     }
     req.body.lbr.buffer->entries =
         (lbr_stack_entry_t *)iht__malloc(sizeof(lbr_stack_entry_t) *
                                          LIBIHT_MAX_LBR_ENTRIES);
     if (req.body.lbr.buffer->entries == NULL) {
         ret = IHT__ERR(IHT_EALLOC);
-        goto entries_cleanup;
+        goto buf_cleanup;
     }
     memset(req.body.lbr.buffer->entries, 0,
            sizeof(lbr_stack_entry_t) * LIBIHT_MAX_LBR_ENTRIES);
@@ -93,31 +92,35 @@ int iht__lbr_dump(iht_trace_t *trace) {
     req.cmd = LIBIHT_IOCTL_DUMP_LBR;
     ret = iht__ioctl(&req);
     if (ret != 0)
-        goto ioctl_cleanup;
+        goto req_cleanup;
 
     /* Dump LBR to trace session */
-    trace->data_size = LIBIHT_MAX_LBR_ENTRIES;
-    trace->data = (iht_data_entry_t *)iht__malloc(sizeof(iht_data_entry_t) *
-                                                  trace->data_size);
+    trace->entry_size = LIBIHT_MAX_LBR_ENTRIES;
+    trace->entry_data = (iht_data_entry_t *)iht__malloc(sizeof(iht_data_entry_t) * trace->entry_size);
+    if (trace->entry_data == NULL) {
+        ret = IHT__ERR(IHT_EALLOC);
+        goto req_cleanup;
+    }
+
     int lbr_tos = req.body.lbr.buffer->lbr_tos;
     int idx = lbr_tos;
-    for (int i = 0; i < LIBIHT_MAX_LBR_ENTRIES; i++) {
-        idx = (idx + 1) % LIBIHT_MAX_LBR_ENTRIES;
+    for (size_t i = 0; i < trace->entry_size; i++) {
+        idx = (idx + 1) % trace->entry_size;
+
         if (req.body.lbr.buffer->entries[idx].from == 0)
             continue;
-
-        trace->data[i].src_ip = req.body.lbr.buffer->entries[idx].from;
-        trace->data[i].dst_ip = req.body.lbr.buffer->entries[idx].to;
+        trace->entry_data[i].src_ip = req.body.lbr.buffer->entries[idx].from;
+        trace->entry_data[i].dst_ip = req.body.lbr.buffer->entries[idx].to;
 
         if (idx == lbr_tos)
             break;
     }
     ret = IHT_SUCCESS;
 
-ioctl_cleanup:
+req_cleanup:
     iht__free(req.body.lbr.buffer->entries);
-entries_cleanup:
-    iht__free(req.body.lbr.buffer);
 buf_cleanup:
+    iht__free(req.body.lbr.buffer);
+no_cleanup:
     return ret;
 }

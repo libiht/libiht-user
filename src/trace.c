@@ -28,9 +28,9 @@ void iht_trace_close(iht_trace_t *trace) {
     if (trace == NULL)
         return;
 
-    if (trace->data != NULL) {
-        iht__free(trace->data);
-        trace->data = NULL;
+    if (trace->entry_data != NULL) {
+        iht__free(trace->entry_data);
+        trace->entry_data = NULL;
     }
     iht__free(trace);
 }
@@ -38,8 +38,8 @@ void iht_trace_close(iht_trace_t *trace) {
 int iht_trace_dump(iht_trace_t *trace) {
     if (trace == NULL)
         return IHT_ETRACE_INVALID;
-    /* User should not modify the data_size field */
-    if (trace->data_size != 0)
+    /* User should not modify the entry_size field */
+    if (trace->entry_size != 0)
         return IHT_ETRACE_INVALID;
     
     if (trace->state == IHT_TRACE_STATE_LBR) {

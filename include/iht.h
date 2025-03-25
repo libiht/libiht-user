@@ -73,8 +73,8 @@ struct iht_trace_s {
         };
     } config;
 
-    size_t data_size;
-    iht_data_entry_t* data;
+    size_t entry_size;
+    iht_data_entry_t* entry_data;
 };
 
 static const iht_trace_t aa;
@@ -82,7 +82,7 @@ struct iht_data_entry_s {
     uint64_t src_ip;
     uint64_t dst_ip;
     uint64_t info;
-    // TODO: Add more fields about the more infor about trace data
+    // TODO: Add more fields about the more info about trace data
     // is_kernel? is_user? is_interrupt? is_exception? etc.
 };
 
